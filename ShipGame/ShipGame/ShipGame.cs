@@ -76,6 +76,21 @@ namespace ShipGame
             public float shotTime;
         }
         List<Laser> lasers = new List<Laser>();
+
+        //#####################
+        // Enemy
+        //#####################
+        Texture2D enemyTexture;
+        Vector2 enemyCenter;
+
+        class Enemy
+        {
+            public Vector2 position;
+            public float rotation;
+        }
+
+        List<Enemy> enemies = new List<Enemy>();
+
         //######################
         // Game code
         //######################
@@ -109,6 +124,22 @@ namespace ShipGame
             laserCenter.Y = laserTexture.Height * .5f;
 
             laserSound = Content.Load<SoundEffect>("shot");
+
+            //enemy
+            enemyTexture = Content.Load<Texture2D>("enemy1");
+            enemyCenter.X = enemyTexture.Width * .5f;
+            enemyCenter.Y = enemyTexture.Height * .5f;
+
+            for (int i = 0; i < 3; ++i)
+            {
+                Enemy enemy = new Enemy();
+                float angle = (float)new Random().NextDouble() * MathHelper.TwoPi;
+                float distance = 2000;
+                enemy.position.X = (float)Math.Cos(angle) * distance;
+                enemy.position.Y = (float)Math.Sin(angle) * distance;
+
+                enemies.Add(enemy);
+            }
         }
 
         protected override void Update(GameTime gameTime)
@@ -182,6 +213,10 @@ namespace ShipGame
                 }
             }
 
+            //############
+            // Enemy
+            //############
+
             //a.x = amount * cos(rotation)
             player.acceleration.X *= player.accelerationAmount * (float)Math.Cos(player.rotation);
             //a.y = amount * sin(rotation)
@@ -226,6 +261,13 @@ namespace ShipGame
             {
                 Laser laser = lasers[i];
                 spriteBatch.Draw(laserTexture, laser.position, null, Color.White, laser.rotation, laserCenter, laserScale, SpriteEffects.None, 0);
+            }
+
+            for (int i = 0; i < enemies.Count; ++i)
+            {
+                Enemy enemy = enemies[i];
+                spriteBatch.Draw(enemyTexture, enemy.position, null, Color.White,
+                                  enemy.rotation, enemyCenter, 1f, SpriteEffects.None, 0);
             }
 
             spriteBatch.Draw(player.texture, player.position, null, Color.White,
