@@ -47,6 +47,10 @@ namespace ShipGame
         }
 
         Stars stars = new Stars();
+        //######################
+        // Camera
+        //######################
+        Vector3 cameraPosition;
 
         //######################
         // Game code
@@ -123,6 +127,9 @@ namespace ShipGame
             player.position += player.velocity * dt + .5f * player.acceleration * dt * dt;
             //dV = a * dt
             player.velocity += dt * player.acceleration;
+
+            cameraPosition.X = player.position.X;
+            cameraPosition.Y = player.position.Y;
             
             base.Update(gameTime);
         }
@@ -132,8 +139,10 @@ namespace ShipGame
             //clear screen
             GraphicsDevice.Clear(Color.Black);
 
+            Matrix cameraMatrix = Matrix.CreateTranslation(-cameraPosition) *
+                                  Matrix.CreateTranslation(new Vector3(resolution * .5f, 0));
             //begin drawing
-            spriteBatch.Begin();
+            spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, cameraMatrix);
 
             //draw stars
             spriteBatch.Draw(stars.texture, stars.position, Color.White);
