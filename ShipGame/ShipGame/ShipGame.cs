@@ -43,7 +43,11 @@ namespace ShipGame
         class Stars
         {
             public Texture2D texture;
-            public Vector2 position;
+            public static Vector2 position = new Vector2(-100000f);
+            public static Rectangle sourceRect =
+                new Rectangle(
+                    x: (int)position.X, y: (int)position.Y,
+                    width: 2*(int)-position.X, height: 2*(int)-position.Y);
         }
 
         Stars stars = new Stars();
@@ -141,11 +145,15 @@ namespace ShipGame
 
             Matrix cameraMatrix = Matrix.CreateTranslation(-cameraPosition) *
                                   Matrix.CreateTranslation(new Vector3(resolution * .5f, 0));
+
+            spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.AnisotropicWrap, null, null, null, cameraMatrix);
+            //draw stars
+            spriteBatch.Draw(stars.texture, Stars.position, Stars.sourceRect, Color.White);
+            
+            spriteBatch.End();
+
             //begin drawing
             spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, cameraMatrix);
-
-            //draw stars
-            spriteBatch.Draw(stars.texture, stars.position, Color.White);
 
             //draw player
             spriteBatch.Draw(player.texture, player.position, null, Color.White,
