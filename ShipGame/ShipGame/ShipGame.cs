@@ -143,23 +143,22 @@ namespace ShipGame
             //clear screen
             GraphicsDevice.Clear(Color.Black);
 
-            Matrix cameraMatrix = Matrix.CreateTranslation(-cameraPosition) *
+            Matrix parallaxMatrix = Matrix.CreateTranslation(- .3f * cameraPosition) *
                                   Matrix.CreateTranslation(new Vector3(resolution * .5f, 0));
-
-            spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.AnisotropicWrap, null, null, null, cameraMatrix);
-            //draw stars
-            spriteBatch.Draw(stars.texture, Stars.position, Stars.sourceRect, Color.White);
-            
+            //draw parallaxed stars
+            spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.AnisotropicWrap, null, null, null, parallaxMatrix);
+            spriteBatch.Draw(stars.texture,Stars.position, Stars.sourceRect, Color.White, 
+                                0f, Vector2.Zero, 1f, SpriteEffects.FlipHorizontally, 0);
             spriteBatch.End();
 
-            //begin drawing
-            spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, cameraMatrix);
 
-            //draw player
+            Matrix cameraMatrix = Matrix.CreateTranslation(-cameraPosition) *
+                                  Matrix.CreateTranslation(new Vector3(resolution * .5f, 0));
+            //draw stars and player
+            spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.AnisotropicWrap, null, null, null, cameraMatrix);
+            spriteBatch.Draw(stars.texture, Stars.position, Stars.sourceRect, Color.White);
             spriteBatch.Draw(player.texture, player.position, null, Color.White,
                              player.rotation, player.center, 1f, SpriteEffects.None, 0);
-
-            //end drawing
             spriteBatch.End();
 
             base.Draw(gameTime);
