@@ -59,6 +59,7 @@ namespace ShipGame
         //######################
         // Lasers
         //######################
+        SoundEffect laserSound;
         Texture2D laserTexture;
         Vector2 laserCenter;
         float laserScale = 3f;
@@ -105,6 +106,8 @@ namespace ShipGame
             laserTexture = Content.Load<Texture2D>("laser");
             laserCenter.X = laserTexture.Width * .5f;
             laserCenter.Y = laserTexture.Height * .5f;
+
+            laserSound = Content.Load<SoundEffect>("shot");
         }
 
         protected override void Update(GameTime gameTime)
@@ -159,12 +162,23 @@ namespace ShipGame
                 laser.shotTime = now;
                 lastShotTime = laser.shotTime;
                 lasers.Add(laser);
+
+                player.velocity.X -= (float)Math.Cos(laser.rotation) * 2000f;
+                player.velocity.Y -= (float)Math.Sin(laser.rotation) * 2000f;
+                laserSound.Play(.25f, (float)(.3 - .6 * new Random().NextDouble()), 0f);
             }
 
             for (int i = 0; i < lasers.Count; ++i)
             {
                 Laser laser = lasers[i];
-                laser.position += laser.velocity * dt;
+                if (now - laser.shotTime > 1f)
+                {
+                    lasers.Remove(laser);
+                }
+                else
+                {
+                    laser.position += laser.velocity * dt;
+                }
             }
 
             //a.x = amount * cos(rotation)
