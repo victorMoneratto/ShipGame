@@ -47,7 +47,7 @@ namespace ShipGame
             public static Rectangle sourceRect =
                 new Rectangle(
                     x: (int)position.X, y: (int)position.Y,
-                    width: 2*(int)-position.X, height: 2*(int)-position.Y);
+                    width: 2 * (int)-position.X, height: 2 * (int)-position.Y);
         }
 
         Stars stars = new Stars();
@@ -56,6 +56,24 @@ namespace ShipGame
         //######################
         Vector3 cameraPosition;
 
+        //######################
+        // Lasers
+        //######################
+        Texture2D laserTexture;
+        Vector2 laserCenter;
+        float laserScale = 3f;
+        float laserSpeed = 2000;
+        float lastShotTime;
+        float timeBetweenShots = .2f;
+
+        class Laser
+        {
+            public Vector2 position;
+            public Vector2 velocity;
+            public float rotation;
+            public float shotTime;
+        }
+        List<Laser> lasers = new List<Laser>();
         //######################
         // Game code
         //######################
@@ -74,7 +92,7 @@ namespace ShipGame
         {
             //initialize texture drawer
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            
+
             //load player texture
             player.texture = Content.Load<Texture2D>("player");
             player.center.X = .5f * player.texture.Width;
@@ -82,21 +100,28 @@ namespace ShipGame
 
             //load stars texture
             stars.texture = Content.Load<Texture2D>("stars");
+
+            //laser
+            laserTexture = Content.Load<Texture2D>("laser");
+            laserCenter.X = laserTexture.Width * .5f;
+            laserCenter.Y = laserTexture.Height * .5f;
         }
 
         protected override void Update(GameTime gameTime)
         {
             KeyboardState keys = Keyboard.GetState();
-            
+
+
             //time since last update
+            float now = (float)gameTime.TotalGameTime.TotalSeconds;
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            
-            
+
+
             //##################
             // PLAYER
             //##################
 
-            
+
             //angle
             if (keys.IsKeyDown(Keys.A))
             {
@@ -119,6 +144,29 @@ namespace ShipGame
                 player.acceleration -= Vector2.One;
             }
 
+
+            //#################
+            // Laser
+            //#################
+            if (keys.IsKeyDown(Keys.Space) && now - lastShotTime >= timeBetweenShots)
+            {
+                Laser laser = new Laser();
+                laser.position = player.position;
+                laser.rotation = player.rotation;
+                laser.velocity.X = (float)Math.Cos(laser.rotation) * laserSpeed;
+                laser.velocity.Y = (float)Math.Sin(laser.rotation) * laserSpeed;
+
+                laser.shotTime = now;
+                lastShotTime = laser.shotTime;
+                lasers.Add(laser);
+            }
+
+            for (int i = 0; i < lasers.Count; ++i)
+            {
+                Laser laser = lasers[i];
+                laser.position += laser.velocity * dt;
+            }
+
             //a.x = amount * cos(rotation)
             player.acceleration.X *= player.accelerationAmount * (float)Math.Cos(player.rotation);
             //a.y = amount * sin(rotation)
@@ -134,7 +182,7 @@ namespace ShipGame
 
             cameraPosition.X = MathHelper.Lerp(cameraPosition.X, player.position.X, .03f);
             cameraPosition.Y = MathHelper.Lerp(cameraPosition.Y, player.position.Y, .05f);
-            
+
             base.Update(gameTime);
         }
 
@@ -143,11 +191,11 @@ namespace ShipGame
             //clear screen
             GraphicsDevice.Clear(Color.Black);
 
-            Matrix parallaxMatrix = Matrix.CreateTranslation(- .3f * cameraPosition) *
+            Matrix parallaxMatrix = Matrix.CreateTranslation(-.3f * cameraPosition) *
                                   Matrix.CreateTranslation(new Vector3(resolution * .5f, 0));
             //draw parallaxed stars
             spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.AnisotropicWrap, null, null, null, parallaxMatrix);
-            spriteBatch.Draw(stars.texture,Stars.position, Stars.sourceRect, Color.White, 
+            spriteBatch.Draw(stars.texture, Stars.position, Stars.sourceRect, Color.White,
                                 0f, Vector2.Zero, 1f, SpriteEffects.FlipHorizontally, 0);
             spriteBatch.End();
 
@@ -157,8 +205,16 @@ namespace ShipGame
             //draw stars and player
             spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.AnisotropicWrap, null, null, null, cameraMatrix);
             spriteBatch.Draw(stars.texture, Stars.position, Stars.sourceRect, Color.White);
+
+            //print lasers
+            for (int i = 0; i < lasers.Count; ++i)
+            {
+                Laser laser = lasers[i];
+                spriteBatch.Draw(laserTexture, laser.position, null, Color.White, laser.rotation, laserCenter, laserScale, SpriteEffects.None, 0);
+            }
+
             spriteBatch.Draw(player.texture, player.position, null, Color.White,
-                             player.rotation, player.center, 1f, SpriteEffects.None, 0);
+                              player.rotation, player.center, 1f, SpriteEffects.None, 0);
             spriteBatch.End();
 
             base.Draw(gameTime);
