@@ -24,11 +24,14 @@ namespace ShipGame
         class Player
         {
             public Texture2D texture;
+            public Vector2 center;
             public Vector2 position;
             public Vector2 velocity;
             public Vector2 acceleration;
             public float accelerationAmount = 5000;
             public float drag = 5;
+            public float rotation;
+            public float rotationAmount = MathHelper.TwoPi;
         }
 
         //create and initialize our player variable
@@ -66,6 +69,8 @@ namespace ShipGame
             
             //load player texture
             player.texture = Content.Load<Texture2D>("player");
+            player.center.X = .5f * player.texture.Width;
+            player.center.Y = .5f * player.texture.Height;
 
             //load stars texture
             stars.texture = Content.Load<Texture2D>("stars");
@@ -83,30 +88,36 @@ namespace ShipGame
             // PLAYER
             //##################
 
-            //zero acceleration every update
-            player.acceleration = Vector2.Zero;
-            //x coordinate acceleration
+            
+            //angle
             if (keys.IsKeyDown(Keys.A))
             {
-                player.acceleration.X -= player.accelerationAmount;
+                player.rotation -= player.rotationAmount * dt;
             }
             if (keys.IsKeyDown(Keys.D))
             {
-                player.acceleration.X += player.accelerationAmount;
+                player.rotation += player.rotationAmount * dt;
             }
 
-            //y coordinate acceleration
+            //zero acceleration every update
+            player.acceleration = Vector2.Zero;
+            //acceleration
             if (keys.IsKeyDown(Keys.W))
             {
-                player.acceleration.Y -= player.accelerationAmount;
+                player.acceleration += Vector2.One;
             }
             if (keys.IsKeyDown(Keys.S))
             {
-                player.acceleration.Y += player.accelerationAmount;
+                player.acceleration -= Vector2.One;
             }
 
+            //a.x = amount * cos(rotation)
+            player.acceleration.X *= player.accelerationAmount * (float)Math.Cos(player.rotation);
+            //a.y = amount * sin(rotation)
+            player.acceleration.Y *= player.accelerationAmount * (float)Math.Sin(player.rotation);
+
             //Drag
-            player.acceleration -= player.drag* player.velocity;
+            player.acceleration -= player.drag * player.velocity;
 
             //dS = v*dt + (a*dt^2)/2
             player.position += player.velocity * dt + .5f * player.acceleration * dt * dt;
@@ -128,7 +139,8 @@ namespace ShipGame
             spriteBatch.Draw(stars.texture, stars.position, Color.White);
 
             //draw player
-            spriteBatch.Draw(player.texture, player.position, Color.White);
+            spriteBatch.Draw(player.texture, player.position, null, Color.White,
+                             player.rotation, player.center, 1f, SpriteEffects.None, 0);
 
             //end drawing
             spriteBatch.End();
