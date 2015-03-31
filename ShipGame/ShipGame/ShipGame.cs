@@ -25,6 +25,10 @@ namespace ShipGame
         {
             public Texture2D texture;
             public Vector2 position;
+            public Vector2 velocity;
+            public Vector2 acceleration;
+            public float accelerationAmount = 5000;
+            public float drag = 5;
         }
 
         //create and initialize our player variable
@@ -73,26 +77,41 @@ namespace ShipGame
             
             //time since last update
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            //amount the player moves on one axis
-            //in pixels/second
-            float playerStep = 1000;
-            if(keys.IsKeyDown(Keys.A))
+            
+            
+            //##################
+            // PLAYER
+            //##################
+
+            //zero acceleration every update
+            player.acceleration = Vector2.Zero;
+            //x coordinate acceleration
+            if (keys.IsKeyDown(Keys.A))
             {
-                player.position.X -= playerStep * dt;
+                player.acceleration.X -= player.accelerationAmount;
             }
-            if(keys.IsKeyDown(Keys.D))
+            if (keys.IsKeyDown(Keys.D))
             {
-                player.position.X += playerStep * dt;
+                player.acceleration.X += player.accelerationAmount;
             }
 
-            if(keys.IsKeyDown(Keys.W))
+            //y coordinate acceleration
+            if (keys.IsKeyDown(Keys.W))
             {
-                player.position.Y -= playerStep * dt;
+                player.acceleration.Y -= player.accelerationAmount;
             }
-            if(keys.IsKeyDown(Keys.S))
+            if (keys.IsKeyDown(Keys.S))
             {
-                player.position.Y += playerStep * dt;
+                player.acceleration.Y += player.accelerationAmount;
             }
+
+            //Drag
+            player.acceleration -= player.drag* player.velocity;
+
+            //dS = v*dt + (a*dt^2)/2
+            player.position += player.velocity * dt + .5f * player.acceleration * dt * dt;
+            //dV = a * dt
+            player.velocity += dt * player.acceleration;
             
             base.Update(gameTime);
         }
