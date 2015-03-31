@@ -69,6 +69,31 @@ namespace ShipGame
 
         protected override void Update(GameTime gameTime)
         {
+            KeyboardState keys = Keyboard.GetState();
+            
+            //time since last update
+            float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            //amount the player moves on one axis
+            //in pixels/second
+            float playerStep = 1000;
+            if(keys.IsKeyDown(Keys.A))
+            {
+                player.position.X -= playerStep * dt;
+            }
+            if(keys.IsKeyDown(Keys.D))
+            {
+                player.position.X += playerStep * dt;
+            }
+
+            if(keys.IsKeyDown(Keys.W))
+            {
+                player.position.Y -= playerStep * dt;
+            }
+            if(keys.IsKeyDown(Keys.S))
+            {
+                player.position.Y += playerStep * dt;
+            }
+            
             base.Update(gameTime);
         }
 
