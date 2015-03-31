@@ -88,6 +88,7 @@ namespace ShipGame
         {
             public Vector2 position;
             public float rotation;
+            public Vector2 followStrength;
         }
 
         List<Enemy> enemies = new List<Enemy>();
@@ -153,8 +154,6 @@ namespace ShipGame
             //##################
             // PLAYER
             //##################
-
-
             //angle
             if (keys.IsKeyDown(Keys.A))
             {
@@ -196,6 +195,7 @@ namespace ShipGame
                 player.velocity.X -= (float)Math.Cos(laser.rotation) * player.pushBack;
                 player.velocity.Y -= (float)Math.Sin(laser.rotation) * player.pushBack;
                 laserSound.Play(.25f, (float)(.3 - .6 * new Random().NextDouble()), 0f);
+
             }
 
             for (int i = 0; i < lasers.Count; ++i)
@@ -214,6 +214,13 @@ namespace ShipGame
             //############
             // Enemy
             //############
+            for (int i = 0; i < enemies.Count; ++i)
+            {
+                Enemy enemy = enemies[i];
+                enemy.position.X = MathHelper.Lerp(enemy.position.X, player.position.X, enemy.followStrength.X * dt);
+                enemy.position.Y = MathHelper.Lerp(enemy.position.Y, player.position.Y, enemy.followStrength.Y * dt);
+            }
+
 
             //a.x = amount * cos(rotation)
             player.acceleration.X *= player.accelerationAmount * (float)Math.Cos(player.rotation);
@@ -228,8 +235,8 @@ namespace ShipGame
             //dV = a * dt
             player.velocity += dt * player.acceleration;
 
-            cameraPosition.X = MathHelper.Lerp(cameraPosition.X, player.position.X, .03f);
-            cameraPosition.Y = MathHelper.Lerp(cameraPosition.Y, player.position.Y, .05f);
+            cameraPosition.X = MathHelper.Lerp(cameraPosition.X, player.position.X, 2f * dt);
+            cameraPosition.Y = MathHelper.Lerp(cameraPosition.Y, player.position.Y, 4f * dt);
 
             base.Update(gameTime);
         }
