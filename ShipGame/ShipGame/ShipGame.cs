@@ -128,8 +128,8 @@ namespace ShipGame
             //dV = a * dt
             player.velocity += dt * player.acceleration;
 
-            cameraPosition.X = player.position.X;
-            cameraPosition.Y = player.position.Y;
+            cameraPosition.X = MathHelper.Lerp(cameraPosition.X, player.position.X, .03f);
+            cameraPosition.Y = MathHelper.Lerp(cameraPosition.Y, player.position.Y, .05f);
             
             base.Update(gameTime);
         }
