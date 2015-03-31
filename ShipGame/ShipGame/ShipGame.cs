@@ -31,6 +31,17 @@ namespace ShipGame
         Player player = new Player();
 
         //######################
+        // Stars
+        //######################
+        class Stars
+        {
+            public Texture2D texture;
+            public Vector2 position;
+        }
+
+        Stars stars = new Stars();
+
+        //######################
         // Game code
         //######################
 
@@ -48,7 +59,12 @@ namespace ShipGame
         {
             //initialize texture drawer
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            
+            //load player texture
             player.texture = Content.Load<Texture2D>("player");
+
+            //load stars texture
+            stars.texture = Content.Load<Texture2D>("stars");
         }
 
         protected override void Update(GameTime gameTime)
@@ -63,6 +79,9 @@ namespace ShipGame
 
             //begin drawing
             spriteBatch.Begin();
+
+            //draw stars
+            spriteBatch.Draw(stars.texture, stars.position, Color.White);
 
             //draw player
             spriteBatch.Draw(player.texture, player.position, Color.White);
