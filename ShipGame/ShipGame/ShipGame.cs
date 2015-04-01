@@ -222,6 +222,8 @@ namespace ShipGame
 
                 enemy.position += deltaPos * enemySpeed * dt;
 
+                enemy.rotation = (float)Math.Atan2(deltaPos.Y, deltaPos.X);
+
             }
 
 
