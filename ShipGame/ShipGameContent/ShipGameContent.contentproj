@@ -65,7 +65,7 @@
     <Compile Include="song.wav">
       <Name>song</Name>
       <Importer>WavImporter</Importer>
-      <Processor>SoundEffectProcessor</Processor>
+      <Processor>SongProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>

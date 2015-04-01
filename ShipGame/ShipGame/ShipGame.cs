@@ -97,7 +97,6 @@ namespace ShipGame
         // Game code
         //######################
         Random random = new Random();
-
         public ShipGame()
         {
             Window.Title = "Ship Game";
@@ -222,6 +221,7 @@ namespace ShipGame
                 deltaPos.Normalize();
 
                 enemy.position += deltaPos * enemySpeed * dt;
+
             }
 
 
