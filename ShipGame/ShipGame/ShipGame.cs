@@ -19,8 +19,6 @@ namespace ShipGame
         //############################
         //  PLAYER
         //############################
-
-        //define our player struct
         class Player
         {
             public Texture2D texture;
@@ -36,7 +34,6 @@ namespace ShipGame
             public float collisionRadius = 30;
         }
 
-        //create and initialize our player variable
         Player player = new Player();
 
         //######################
@@ -53,10 +50,13 @@ namespace ShipGame
         }
 
         Stars stars = new Stars();
+
         //######################
         // Camera
         //######################
         Vector3 cameraPosition;
+        float cameraZoom = 1f;
+        float cameraComeBack = .1f;
 
         //######################
         // Lasers
@@ -206,6 +206,7 @@ namespace ShipGame
                 lastShotTime = laser.shotTime;
                 lasers.Add(laser);
 
+                cameraZoom += .05f;
                 player.velocity.X -= (float)Math.Cos(laser.rotation) * player.pushBack;
                 player.velocity.Y -= (float)Math.Sin(laser.rotation) * player.pushBack;
                 laserSound.Play(.25f, (float)(.3 - .6 * new Random().NextDouble()), 0f);
@@ -232,15 +233,17 @@ namespace ShipGame
             {
                 Enemy enemy = enemies[i];
 
-                if(intersectCircles(player.position, player.collisionRadius,
+                if (intersectCircles(player.position, player.collisionRadius,
                                     enemy.position, enemyCollisionRadius))
                 {
                     crashSound.Play();
+
+                    cameraZoom += .2f;
                     player.velocity = -player.velocity;
                     SpawnEnemy(enemy, player.position, spawnDistance, player.rotation - MathHelper.PiOver2, player.rotation + MathHelper.PiOver2);
                 }
 
-                for(int j = 0; j < lasers.Count; ++j)
+                for (int j = 0; j < lasers.Count; ++j)
                 {
                     Laser laser = lasers[j];
                     if (intersectCircles(laser.position, laserCollisionRadius,
@@ -251,14 +254,13 @@ namespace ShipGame
                         SpawnEnemy(enemy, player.position, spawnDistance, player.rotation - MathHelper.PiOver2, player.rotation + MathHelper.PiOver2);
                     }
                 }
-                
+
                 Vector2 deltaPos = player.position - enemy.position;
                 deltaPos.Normalize();
 
                 enemy.position += deltaPos * enemySpeed * dt;
 
                 enemy.rotation = (float)Math.Atan2(deltaPos.Y, deltaPos.X);
-
             }
 
 
@@ -275,10 +277,10 @@ namespace ShipGame
             //dV = a * dt
             player.velocity += dt * player.acceleration;
 
+            //camera
             cameraPosition.X = MathHelper.Lerp(cameraPosition.X, player.position.X, 2f * dt);
             cameraPosition.Y = MathHelper.Lerp(cameraPosition.Y, player.position.Y, 4f * dt);
-
-            base.Update(gameTime);
+            cameraZoom = MathHelper.Lerp(cameraZoom, 1f, cameraComeBack);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -287,7 +289,8 @@ namespace ShipGame
             GraphicsDevice.Clear(Color.Black);
 
             Matrix parallaxMatrix = Matrix.CreateTranslation(-.3f * cameraPosition) *
-                                  Matrix.CreateTranslation(new Vector3(resolution * .5f, 0));
+                                    Matrix.CreateScale(cameraZoom) *
+                                    Matrix.CreateTranslation(new Vector3(resolution * .5f, 0));
             //draw parallaxed stars
             spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.AnisotropicWrap, null, null, null, parallaxMatrix);
             spriteBatch.Draw(stars.texture, Stars.position, Stars.sourceRect, Color.White,
@@ -296,7 +299,9 @@ namespace ShipGame
 
 
             Matrix cameraMatrix = Matrix.CreateTranslation(-cameraPosition) *
+                                  Matrix.CreateScale(cameraZoom) *
                                   Matrix.CreateTranslation(new Vector3(resolution * .5f, 0));
+
             //draw stars and player
             spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.AnisotropicWrap, null, null, null, cameraMatrix);
             spriteBatch.Draw(stars.texture, Stars.position, Stars.sourceRect, Color.White);
@@ -319,7 +324,6 @@ namespace ShipGame
                               player.rotation, player.center, 1f, SpriteEffects.None, 0);
             spriteBatch.End();
 
-            base.Draw(gameTime);
         }
 
         void SpawnEnemy(Enemy enemy, Vector2 origin, float distance, float angleMin, float angleMax)
