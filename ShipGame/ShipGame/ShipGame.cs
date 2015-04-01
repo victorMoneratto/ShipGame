@@ -204,6 +204,14 @@ namespace ShipGame
         //highscore, you know
         int highscore = 0;
 
+        //#######################
+        // Pause
+        //######################
+        //are we running the game (not paused)
+        bool isRunning = true;
+        //last time we toggled pause
+        float lastPauseTime;
+
         //######################
         // Game code
         //######################
@@ -270,22 +278,55 @@ namespace ShipGame
             //get state of keys
             KeyboardState keys = Keyboard.GetState();
 
+
             //time since last update
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
             
             //current time
             float now = (float)gameTime.TotalGameTime.TotalSeconds;
 
+            //##############
+            // PAUSE and Exit
+            //##############
+            
+            // Esc to leave
+            if (keys.IsKeyDown(Keys.Escape)) Exit();
+
+            //Enter to Pause
+            if(keys.IsKeyDown(Keys.Enter))
+            {
+                //if some times passed since we last toggled pause 
+                if (now - lastPauseTime > .1f)
+                {
+                    //save variables for pausing
+                    lastPauseTime = now;
+                    isRunning = !isRunning;
+
+                    //pause or resume music
+                    if (isRunning)
+                    {
+                        MediaPlayer.Resume();
+                    }
+                    else
+                    {
+                        MediaPlayer.Pause();
+                    }
+                }
+            }
+
+            //do nothing more if we're paused
+            if (!isRunning) return;
+
             //##################
             // PLAYER
             //##################
             
             //angle
-            if (keys.IsKeyDown(Keys.A))
+            if (keys.IsKeyDown(Keys.A) || keys.IsKeyDown(Keys.Left))
             {
                 player.rotation -= player.rotationAmount * dt;
             }
-            if (keys.IsKeyDown(Keys.D))
+            if (keys.IsKeyDown(Keys.D) || keys.IsKeyDown(Keys.Right))
             {
                 player.rotation += player.rotationAmount * dt;
             }
@@ -293,11 +334,11 @@ namespace ShipGame
             //zero acceleration every update
             player.acceleration = Vector2.Zero;
             //acceleration
-            if (keys.IsKeyDown(Keys.W))
+            if (keys.IsKeyDown(Keys.W) || keys.IsKeyDown(Keys.Up))
             {
                 player.acceleration += Vector2.One;
             }
-            if (keys.IsKeyDown(Keys.S))
+            if (keys.IsKeyDown(Keys.S) || keys.IsKeyDown(Keys.Down))
             {
                 player.acceleration -= Vector2.One;
             }
