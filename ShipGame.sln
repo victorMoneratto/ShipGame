@@ -5,20 +5,32 @@ VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShipGame", "ShipGame\ShipGame\ShipGame.csproj", "{0A62B369-C03C-4805-810D-595F9B063CA3}"
 EndProject
-Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "ShipGameContent", "ShipGame\ShipGameContent\ShipGameContent.contentproj", "{C4597086-5C2A-451F-8EA1-F7D7ED1242CC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShipGameContent", "ShipGame\ShipGameContent\ShipGameContent.contentproj", "{C4597086-5C2A-451F-8EA1-F7D7ED1242CC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		CD_ROM|x86 = CD_ROM|x86
 		Debug|x86 = Debug|x86
+		DVD-5|x86 = DVD-5|x86
 		Release|x86 = Release|x86
+		SingleImage|x86 = SingleImage|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0A62B369-C03C-4805-810D-595F9B063CA3}.CD_ROM|x86.ActiveCfg = Release|x86
+		{0A62B369-C03C-4805-810D-595F9B063CA3}.CD_ROM|x86.Build.0 = Release|x86
 		{0A62B369-C03C-4805-810D-595F9B063CA3}.Debug|x86.ActiveCfg = Debug|x86
 		{0A62B369-C03C-4805-810D-595F9B063CA3}.Debug|x86.Build.0 = Debug|x86
+		{0A62B369-C03C-4805-810D-595F9B063CA3}.DVD-5|x86.ActiveCfg = Debug|x86
+		{0A62B369-C03C-4805-810D-595F9B063CA3}.DVD-5|x86.Build.0 = Debug|x86
 		{0A62B369-C03C-4805-810D-595F9B063CA3}.Release|x86.ActiveCfg = Release|x86
 		{0A62B369-C03C-4805-810D-595F9B063CA3}.Release|x86.Build.0 = Release|x86
+		{0A62B369-C03C-4805-810D-595F9B063CA3}.SingleImage|x86.ActiveCfg = Release|x86
+		{0A62B369-C03C-4805-810D-595F9B063CA3}.SingleImage|x86.Build.0 = Release|x86
+		{C4597086-5C2A-451F-8EA1-F7D7ED1242CC}.CD_ROM|x86.ActiveCfg = Release|x86
 		{C4597086-5C2A-451F-8EA1-F7D7ED1242CC}.Debug|x86.ActiveCfg = Debug|x86
+		{C4597086-5C2A-451F-8EA1-F7D7ED1242CC}.DVD-5|x86.ActiveCfg = Debug|x86
 		{C4597086-5C2A-451F-8EA1-F7D7ED1242CC}.Release|x86.ActiveCfg = Release|x86
+		{C4597086-5C2A-451F-8EA1-F7D7ED1242CC}.SingleImage|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
