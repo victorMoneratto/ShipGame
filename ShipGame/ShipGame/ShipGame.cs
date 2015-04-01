@@ -82,6 +82,7 @@ namespace ShipGame
         //#####################
         Texture2D enemyTexture;
         Vector2 enemyCenter;
+        float spawnDistance = 1400;
 
         class Enemy
         {
@@ -94,6 +95,7 @@ namespace ShipGame
         //######################
         // Game code
         //######################
+        Random random = new Random();
 
         public ShipGame()
         {
@@ -133,11 +135,7 @@ namespace ShipGame
             for (int i = 0; i < 3; ++i)
             {
                 Enemy enemy = new Enemy();
-                float angle = (float)new Random().NextDouble() * MathHelper.TwoPi;
-                float distance = 2000;
-                enemy.position.X = (float)Math.Cos(angle) * distance;
-                enemy.position.Y = (float)Math.Sin(angle) * distance;
-
+                SpawnEnemy(enemy, player.position, spawnDistance, 0, MathHelper.TwoPi);
                 enemies.Add(enemy);
             }
         }
@@ -275,6 +273,16 @@ namespace ShipGame
             spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+        void SpawnEnemy(Enemy enemy, Vector2 origin, float distance, float angleMin, float angleMax)
+        {
+            float between = (float)random.NextDouble();
+            float angle = MathHelper.Lerp(angleMin, angleMax, between);
+            enemy.position.X = (float)Math.Cos(angle);
+            enemy.position.Y = (float)Math.Sin(angle);
+            enemy.position *= distance;
+            enemy.position += origin;
         }
     }
 }
