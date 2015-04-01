@@ -33,6 +33,7 @@ namespace ShipGame
             public float rotation;
             public float rotationAmount = MathHelper.TwoPi;
             public float pushBack = 2000;
+            public float collisionRadius = 30;
         }
 
         //create and initialize our player variable
@@ -67,6 +68,7 @@ namespace ShipGame
         float laserSpeed = 2000;
         float lastShotTime;
         float timeBetweenShots = .2f;
+        float laserCollisionRadius = 15;
 
         class Laser
         {
@@ -84,6 +86,7 @@ namespace ShipGame
         Vector2 enemyCenter;
         float enemySpeed = 900;
         float spawnDistance = 1400;
+        float enemyCollisionRadius = 35;
 
         class Enemy
         {
@@ -98,6 +101,7 @@ namespace ShipGame
         //######################
         Random random = new Random();
         Song song;
+        SoundEffect crashSound;
 
         public ShipGame()
         {
@@ -141,10 +145,14 @@ namespace ShipGame
                 enemies.Add(enemy);
             }
 
+            //song
             song = Content.Load<Song>("song");
             MediaPlayer.Volume = .25f;
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(song);
+
+            //crash
+            crashSound = Content.Load<SoundEffect>("crash");
         }
 
         protected override void Update(GameTime gameTime)
@@ -224,6 +232,26 @@ namespace ShipGame
             {
                 Enemy enemy = enemies[i];
 
+                if(intersectCircles(player.position, player.collisionRadius,
+                                    enemy.position, enemyCollisionRadius))
+                {
+                    crashSound.Play();
+                    player.velocity = -player.velocity;
+                    SpawnEnemy(enemy, player.position, spawnDistance, player.rotation - MathHelper.PiOver2, player.rotation + MathHelper.PiOver2);
+                }
+
+                for(int j = 0; j < lasers.Count; ++j)
+                {
+                    Laser laser = lasers[j];
+                    if (intersectCircles(laser.position, laserCollisionRadius,
+                                        enemy.position, enemyCollisionRadius))
+                    {
+                        crashSound.Play();
+
+                        SpawnEnemy(enemy, player.position, spawnDistance, player.rotation - MathHelper.PiOver2, player.rotation + MathHelper.PiOver2);
+                    }
+                }
+                
                 Vector2 deltaPos = player.position - enemy.position;
                 deltaPos.Normalize();
 
@@ -302,6 +330,14 @@ namespace ShipGame
             enemy.position.Y = (float)Math.Sin(angle);
             enemy.position *= distance;
             enemy.position += origin;
+        }
+
+        bool intersectCircles(Vector2 center1, float radius1, Vector2 center2, float radius2)
+        {
+            float radii = radius1 + radius2;
+            float distance = Vector2.Distance(center1, center2);
+
+            return distance <= radii;
         }
     }
 }
