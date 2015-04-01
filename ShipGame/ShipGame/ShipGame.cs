@@ -99,7 +99,7 @@ namespace ShipGame
         float cameraZoom = 1f;
 
         //speed of camera zoom reset
-        float cameraComeBack = .1f;
+        float cameraComeBack = 2f;
 
         //######################
         // Lasers
@@ -391,6 +391,7 @@ namespace ShipGame
                         player.position = Vector2.Zero;
                         player.velocity = Vector2.Zero;
                         cameraPosition = Vector3.Zero;
+                        cameraZoom = 1f;
 
                         //start music again
                         MediaPlayer.MoveNext();
@@ -403,10 +404,10 @@ namespace ShipGame
                     }
 
                     //play hit sound
-                    crashSound.Play();
+                    crashSound.Play(.5f, 0.0f, 0f);
 
                     //add some camera zoom
-                    cameraZoom += .2f;
+                    cameraZoom += .1f;
 
                     //add some weird physics to the crash
                     player.velocity = -player.velocity;
@@ -428,7 +429,7 @@ namespace ShipGame
                         player.kills++;
 
                         //play hit sound
-                        crashSound.Play();
+                        crashSound.Play(.5f, 1.0f, 0f);
                         
                         //respawn enemy
                         SpawnEnemy(enemy, player.position, spawnDistance, player.rotation - MathHelper.PiOver2, player.rotation + MathHelper.PiOver2);
@@ -473,7 +474,7 @@ namespace ShipGame
             cameraPosition.Y = MathHelper.Lerp(cameraPosition.Y, player.position.Y, 4f * dt);
 
             //smoothly restore camera zoom back to normal
-            cameraZoom = MathHelper.Lerp(cameraZoom, 1f, cameraComeBack);
+            cameraZoom = MathHelper.Lerp(cameraZoom, 1f, cameraComeBack * dt);
         }
 
         protected override void Draw(GameTime gameTime)
