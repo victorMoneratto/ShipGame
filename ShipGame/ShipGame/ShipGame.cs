@@ -97,6 +97,8 @@ namespace ShipGame
         // Game code
         //######################
         Random random = new Random();
+        Song song;
+
         public ShipGame()
         {
             Window.Title = "Ship Game";
@@ -138,6 +140,11 @@ namespace ShipGame
                 SpawnEnemy(enemy, player.position, spawnDistance, 0, MathHelper.TwoPi);
                 enemies.Add(enemy);
             }
+
+            song = Content.Load<Song>("song");
+            MediaPlayer.Volume = .25f;
+            MediaPlayer.IsRepeating = true;
+            MediaPlayer.Play(song);
         }
 
         protected override void Update(GameTime gameTime)
