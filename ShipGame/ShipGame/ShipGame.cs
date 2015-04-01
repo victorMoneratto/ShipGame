@@ -84,7 +84,7 @@ namespace ShipGame
         //#####################
         Texture2D enemyTexture;
         Vector2 enemyCenter;
-        float enemySpeed = 900;
+        float enemySpeed = 1000;
         float spawnDistance = 1400;
         float enemyCollisionRadius = 35;
 
@@ -92,6 +92,7 @@ namespace ShipGame
         {
             public Vector2 position;
             public float rotation;
+            public Vector2 directionMult;
         }
 
         List<Enemy> enemies = new List<Enemy>();
@@ -258,7 +259,7 @@ namespace ShipGame
                 Vector2 deltaPos = player.position - enemy.position;
                 deltaPos.Normalize();
 
-                enemy.position += deltaPos * enemySpeed * dt;
+                enemy.position += deltaPos * enemy.directionMult * enemySpeed * dt;
 
                 enemy.rotation = (float)Math.Atan2(deltaPos.Y, deltaPos.X);
             }
@@ -334,6 +335,7 @@ namespace ShipGame
             enemy.position.Y = (float)Math.Sin(angle);
             enemy.position *= distance;
             enemy.position += origin;
+            enemy.directionMult = new Vector2(.5f + .5f * (float)random.NextDouble(), .5f + .5f * (float)random.NextDouble());
         }
 
         bool intersectCircles(Vector2 center1, float radius1, Vector2 center2, float radius2)
