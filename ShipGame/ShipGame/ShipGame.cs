@@ -32,6 +32,8 @@ namespace ShipGame
             public float rotationAmount = MathHelper.TwoPi;
             public float pushBack = 2000;
             public float collisionRadius = 30;
+            public int kills = 0;
+            public int hp = 5;
         }
 
         Player player = new Player();
@@ -103,6 +105,10 @@ namespace ShipGame
         Random random = new Random();
         Song song;
         SoundEffect crashSound;
+        SpriteFont font;
+
+        int highscore = 0;
+
 
         public ShipGame()
         {
@@ -154,12 +160,14 @@ namespace ShipGame
 
             //crash
             crashSound = Content.Load<SoundEffect>("crash");
+            
+            //font
+            font = Content.Load<SpriteFont>("font");
         }
 
         protected override void Update(GameTime gameTime)
         {
             KeyboardState keys = Keyboard.GetState();
-
 
             //time since last update
             float now = (float)gameTime.TotalGameTime.TotalSeconds;
@@ -237,6 +245,26 @@ namespace ShipGame
                 if (intersectCircles(player.position, player.collisionRadius,
                                     enemy.position, enemyCollisionRadius))
                 {
+                    player.hp--;
+                    if(player.hp == 0)
+                    {
+                        if (player.kills > highscore)
+                        {
+                            highscore = player.kills;
+                        }
+
+                        player.hp = 5;
+                        player.kills = 0;
+                        player.position = Vector2.Zero;
+                        player.velocity = Vector2.Zero;
+                        cameraPosition = Vector3.Zero;
+                        MediaPlayer.MoveNext();
+                        for(int j = 0; j < enemies.Count; ++j)
+                        {
+                            SpawnEnemy(enemies[j], Vector2.Zero, 2000, 0, MathHelper.TwoPi);
+                        }
+                    }
+
                     crashSound.Play();
 
                     cameraZoom += .2f;
@@ -250,6 +278,7 @@ namespace ShipGame
                     if (intersectCircles(laser.position, laserCollisionRadius,
                                         enemy.position, enemyCollisionRadius))
                     {
+                        player.kills++;
                         crashSound.Play();
 
                         SpawnEnemy(enemy, player.position, spawnDistance, player.rotation - MathHelper.PiOver2, player.rotation + MathHelper.PiOver2);
@@ -323,6 +352,14 @@ namespace ShipGame
 
             spriteBatch.Draw(player.texture, player.position, null, Color.White,
                               player.rotation, player.center, 1f, SpriteEffects.None, 0);
+
+            spriteBatch.End();
+
+            spriteBatch.Begin();
+            Vector2 lineSpacing = new Vector2(0, font.LineSpacing);
+            spriteBatch.DrawString(font, "HIGHSCORE: " + highscore, Vector2.Zero, Color.White);
+            spriteBatch.DrawString(font, "SCORE: " + player.kills, 2* lineSpacing, Color.White);
+            spriteBatch.DrawString(font, "HP: " + player.hp, 3 * lineSpacing, Color.White);
             spriteBatch.End();
 
         }
