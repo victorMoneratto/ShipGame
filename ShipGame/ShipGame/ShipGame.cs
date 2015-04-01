@@ -82,13 +82,13 @@ namespace ShipGame
         //#####################
         Texture2D enemyTexture;
         Vector2 enemyCenter;
+        float enemySpeed = 900;
         float spawnDistance = 1400;
 
         class Enemy
         {
             public Vector2 position;
             public float rotation;
-            public Vector2 followStrength;
         }
 
         List<Enemy> enemies = new List<Enemy>();
@@ -217,8 +217,11 @@ namespace ShipGame
             for (int i = 0; i < enemies.Count; ++i)
             {
                 Enemy enemy = enemies[i];
-                enemy.position.X = MathHelper.Lerp(enemy.position.X, player.position.X, enemy.followStrength.X * dt);
-                enemy.position.Y = MathHelper.Lerp(enemy.position.Y, player.position.Y, enemy.followStrength.Y * dt);
+
+                Vector2 deltaPos = player.position - enemy.position;
+                deltaPos.Normalize();
+
+                enemy.position += deltaPos * enemySpeed * dt;
             }
 
 
