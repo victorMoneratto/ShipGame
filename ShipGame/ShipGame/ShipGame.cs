@@ -32,6 +32,7 @@ namespace ShipGame
             public float drag = 5;
             public float rotation;
             public float rotationAmount = MathHelper.TwoPi;
+            public float pushBack = 2000;
         }
 
         //create and initialize our player variable
@@ -163,8 +164,8 @@ namespace ShipGame
                 lastShotTime = laser.shotTime;
                 lasers.Add(laser);
 
-                player.velocity.X -= (float)Math.Cos(laser.rotation) * 2000f;
-                player.velocity.Y -= (float)Math.Sin(laser.rotation) * 2000f;
+                player.velocity.X -= (float)Math.Cos(laser.rotation) * player.pushBack;
+                player.velocity.Y -= (float)Math.Sin(laser.rotation) * player.pushBack;
                 laserSound.Play(.25f, (float)(.3 - .6 * new Random().NextDouble()), 0f);
             }
 
